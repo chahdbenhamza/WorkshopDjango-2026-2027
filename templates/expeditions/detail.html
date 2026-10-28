@@ -1,0 +1,65 @@
+<h1>Détail de l'expédition {{ expedition.reference }}</h1>
+<table>
+  <tbody>
+    <tr>
+      <th scope="row">Ville de départ</th>
+      <td>{{ expedition.ville_depart }}</td>
+    </tr>
+    <tr>
+      <th scope="row">Ville d'arrivée</th>
+      <td>{{ expedition.ville_arrive }}</td>
+    </tr>
+    <tr>
+      <th scope="row">Date souhaitée</th>
+      <td>{{ expedition.date_souhaitée }}</td>
+    </tr>
+    <tr>
+      <th scope="row">Poids (kg)</th>
+      <td>{{ expedition.poid_kg }}</td>
+    </tr>
+    <tr>
+      <th scope="row">Statut</th>
+      <td>{{ expedition.get_statut_display }}</td>
+    </tr>
+    <tr>
+      <th scope="row">Entreprise</th>
+      <td>{{ expedition.entreprise.raison_sociale }}</td>
+    </tr>
+    <tr>
+      <th scope="row">Description</th>
+      <td>{{ expedition.description }}</td>
+    </tr>
+  </tbody>
+</table>
+
+<h2>Offres reçues</h2>
+{% if offres %}
+  <table>
+    <thead>
+      <tr>
+        <th scope="col">Transporteur</th>
+        <th scope="col">Véhicule</th>
+        <th scope="col">Prix</th>
+        <th scope="col">Délai (jours)</th>
+        <th scope="col">Statut</th>
+        <th scope="col">Date de proposition</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for offre in offres %}
+        <tr>
+          <td>{{ offre.transporteur.raison_sociale }}</td>
+          <td>{{ offre.vehicule }}</td>
+          <td>{{ offre.prix }}</td>
+          <td>{{ offre.delai_jours }}</td>
+          <td>{{ offre.get_statut_display }}</td>
+          <td>{{ offre.date_proposition }}</td>
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+{% else %}
+  <p>Aucune offre n'a encore été reçue pour cette expédition.</p>
+{% endif %}
+
+<a href="{% url 'expeditions:liste_expeditions' %}">Retour à la liste</a>
