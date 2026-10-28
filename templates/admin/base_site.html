@@ -1,0 +1,21 @@
+{% extends "admin/base.html" %}
+{% load i18n %}
+
+{% block title %}{% if subtitle %}{{ subtitle }} | {% endif %}{{ title }} | {{ site_title|default:'TransConnect' }}{% endblock %}
+
+{% block branding %}
+<div id="site-name" style="display: flex; align-items: center; gap: 15px;">
+    <a href="{% url 'admin:index' %}" style="display: flex; align-items: center; gap: 8px; text-decoration: none; color: inherit;">
+        <span style="font-size: 1.4rem;">🚛</span>
+        <span style="font-weight: 700; letter-spacing: 0.5px;">{{ site_header|default:'TransConnect Admin' }}</span>
+    </a>
+</div>
+{% endblock %}
+
+{% block userlinks %}
+    <a href="{% url 'admin:health_check' %}" style="background: #2563eb; color: #fff; padding: 4px 10px; border-radius: 4px; font-weight: 600; text-decoration: none; margin-right: 12px; display: inline-flex; align-items: center; gap: 5px;">
+        <span>🛡️</span> Contrôle d'intégrité
+    </a>
+    {{ block.super }}
+{% endblock %}
+

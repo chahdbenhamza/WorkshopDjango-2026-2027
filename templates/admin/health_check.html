@@ -1,0 +1,332 @@
+{% extends "admin/base_site.html" %}
+{% load i18n %}
+
+{% block breadcrumbs %}
+<div class="breadcrumbs">
+    <a href="{% url 'admin:index' %}">{% translate 'Home' %}</a>
+    &rsaquo; Contrôle d'intégrité métier
+</div>
+{% endblock %}
+
+{% block content %}
+<style>
+    .health-container {
+        font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        color: #1e293b;
+        max-width: 1200px;
+        margin: 0 auto;
+    }
+    .header-box {
+        background: #ffffff;
+        border: 1px solid #e2e8f0;
+        border-radius: 8px;
+        padding: 24px;
+        margin-bottom: 24px;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+    }
+    .header-flex {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 12px;
+    }
+    .kpi-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+        gap: 16px;
+        margin-bottom: 28px;
+    }
+    .kpi-card {
+        background: #ffffff;
+        border: 1px solid #e2e8f0;
+        border-radius: 8px;
+        padding: 20px;
+        box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+    }
+    .kpi-title {
+        font-size: 0.85rem;
+        font-weight: 600;
+        text-transform: uppercase;
+    }
+    .kpi-value {
+        font-size: 2rem;
+        font-weight: 800;
+        margin-top: 4px;
+    }
+    .check-card {
+        background: #ffffff;
+        border-radius: 8px;
+        padding: 20px;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+        margin-bottom: 20px;
+    }
+    .check-card-ok {
+        border: 1px solid #cbd5e1;
+        border-left: 6px solid #22c55e;
+    }
+    .check-card-alert {
+        border: 1px solid #fca5a5;
+        border-left: 6px solid #ef4444;
+    }
+    .badge-ok {
+        background: #dcfce7;
+        color: #15803d;
+        font-size: 0.8rem;
+        font-weight: 700;
+        padding: 3px 10px;
+        border-radius: 9999px;
+    }
+    .badge-alert {
+        background: #fee2e2;
+        color: #b91c1c;
+        font-size: 0.8rem;
+        font-weight: 700;
+        padding: 3px 10px;
+        border-radius: 9999px;
+    }
+    .info-box {
+        margin: 14px 0;
+        font-size: 0.92rem;
+        color: #475569;
+        line-height: 1.5;
+        background: #f8fafc;
+        padding: 12px 16px;
+        border-radius: 6px;
+    }
+    .data-table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 0.88rem;
+        text-align: left;
+    }
+    .data-table th {
+        background: #f1f5f9;
+        border-bottom: 2px solid #e2e8f0;
+        color: #475569;
+        padding: 8px 12px;
+    }
+    .data-table td {
+        border-bottom: 1px solid #e2e8f0;
+        padding: 8px 12px;
+    }
+    .tag-statut {
+        background: #fef08a;
+        padding: 2px 6px;
+        border-radius: 4px;
+    }
+    .tag-blue {
+        background: #bfdbfe;
+        padding: 2px 6px;
+        border-radius: 4px;
+    }
+    .tag-green {
+        background: #bbf7d0;
+        color: #166534;
+        padding: 2px 6px;
+        border-radius: 4px;
+    }
+    .action-link {
+        color: #2563eb;
+        font-weight: 600;
+        text-decoration: underline;
+    }
+</style>
+
+<div id="content-main" class="health-container">
+
+    <!-- En-tête -->
+    <div class="header-box">
+        <div class="header-flex">
+            <div>
+                <h1 style="margin: 0 0 6px 0; font-size: 1.6rem; font-weight: 700; color: #0f172a;">
+                    🛡️ Tableau de bord de contrôle d'intégrité métier
+                </h1>
+                <p style="margin: 0; color: #64748b; font-size: 0.95rem;">
+                    Surveillance proactive des règles métier de TransConnect &mdash; Détection des désynchronisations causées par des opérations SQL directes ou des défaillances de cascade.
+                </p>
+            </div>
+            <div>
+                <a href="" style="background: #0f172a; color: #fff; padding: 8px 16px; border-radius: 6px; text-decoration: none; font-weight: 600; font-size: 0.9rem;">
+                    🔄 Rafraîchir les contrôles
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Statistiques / KPIs -->
+    <div class="kpi-grid">
+        <div class="kpi-card">
+            <div class="kpi-title" style="color: #64748b;">Total des contrôles</div>
+            <div class="kpi-value" style="color: #0f172a;">{{ total_checks }}</div>
+        </div>
+        <div class="kpi-card">
+            <div class="kpi-title" style="color: #16a34a;">Contrôles sains</div>
+            <div class="kpi-value" style="color: #16a34a;">{{ checks_conformes }}</div>
+        </div>
+        <div class="kpi-card">
+            <div class="kpi-title" style="color: #dc2626;">Contrôles en alerte</div>
+            <div class="kpi-value" style="color: #dc2626;">{{ checks_en_alerte }}</div>
+        </div>
+        <div class="kpi-card">
+            <div class="kpi-title" style="color: #ea580c;">Anomalies détectées</div>
+            <div class="kpi-value" style="color: #ea580c;">{{ total_anomalies }}</div>
+        </div>
+    </div>
+
+    <!-- Liste détaillée des contrôles -->
+    <div>
+        {% for check in checks %}
+        <div class="check-card {{ check.card_class }}">
+            
+            <div style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 10px;">
+                <div>
+                    <div style="display: flex; align-items: center; gap: 10px;">
+                        <h2 style="margin: 0; font-size: 1.25rem; font-weight: 700; color: #0f172a;">
+                            {{ check.id }}. {{ check.titre }}
+                        </h2>
+                        {% if check.is_ok %}
+                            <span class="badge-ok">CONFORME (0)</span>
+                        {% else %}
+                            <span class="badge-alert">⚠️ {{ check.count }} ANOMALIE{% if check.count > 1 %}S{% endif %}</span>
+                        {% endif %}
+                    </div>
+                    <div style="margin-top: 6px; font-size: 0.85rem; color: #2563eb; font-weight: 600;">
+                        🏷️ {{ check.regle_metier }}
+                    </div>
+                </div>
+            </div>
+
+            <!-- Description & Risque -->
+            <div class="info-box">
+                <p style="margin: 0 0 6px 0;"><strong>Objectif du contrôle :</strong> {{ check.description }}</p>
+                <p style="margin: 0;"><strong>Scénario de survenue en production :</strong> <em>{{ check.scenario_risque }}</em></p>
+            </div>
+
+            <!-- Détail des anomalies -->
+            {% if not check.is_ok %}
+                <div style="margin-top: 14px;">
+                    <div style="font-weight: 700; font-size: 0.95rem; margin-bottom: 8px; color: #991b1b;">
+                        Éléments identifiés en violation :
+                    </div>
+                    
+                    <div style="overflow-x: auto;">
+                        {% if check.type_items == 'offres' %}
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>ID Offre</th>
+                                    <th>Expédition</th>
+                                    <th>Transporteur</th>
+                                    <th>Statut Offre</th>
+                                    <th>Prix</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for item in check.items %}
+                                <tr>
+                                    <td style="font-weight: 600;">#{{ item.id }}</td>
+                                    <td>{{ item.expedition.reference }} (statut: {{ item.expedition.statut }})</td>
+                                    <td>{{ item.transporteur.raison_sociale }}</td>
+                                    <td><span class="tag-statut">{{ item.statut }}</span></td>
+                                    <td>{{ item.prix }} TND</td>
+                                    <td>
+                                        <a href="{% url 'admin:OffreApp_offre_change' item.id %}" target="_blank" class="action-link">Consulter dans l'Admin &rarr;</a>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                        {% elif check.type_items == 'expeditions' %}
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>Référence</th>
+                                    <th>Entreprise</th>
+                                    <th>Statut</th>
+                                    <th>Date Création</th>
+                                    <th>Trajet</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for item in check.items %}
+                                <tr>
+                                    <td style="font-weight: 600;">{{ item.reference }}</td>
+                                    <td>{{ item.entreprise.raison_sociale }}</td>
+                                    <td><span class="tag-blue">{{ item.statut }}</span></td>
+                                    <td>{{ item.created_at|date:"d/m/Y H:i" }}</td>
+                                    <td>{{ item.ville_depart }} &rarr; {{ item.ville_arrive }}</td>
+                                    <td>
+                                        <a href="{% url 'admin:ExpeditionApp_expedition_change' item.id %}" target="_blank" class="action-link">Consulter dans l'Admin &rarr;</a>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                        {% elif check.type_items == 'entreprises' %}
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>Raison Sociale</th>
+                                    <th>Matricule Fiscal</th>
+                                    <th>Type</th>
+                                    <th>Gérant</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for item in check.items %}
+                                <tr>
+                                    <td style="font-weight: 600;">{{ item.raison_sociale }}</td>
+                                    <td>{{ item.matricule_fiscal }}</td>
+                                    <td>{{ item.type_entreprise }}</td>
+                                    <td>{{ item.gerant.username }}</td>
+                                    <td>
+                                        <a href="{% url 'admin:EntrepriseApp_entreprise_change' item.id %}" target="_blank" class="action-link">Consulter dans l'Admin &rarr;</a>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                        {% elif check.type_items == 'vehicules' %}
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>Immatriculation</th>
+                                    <th>Type Véhicule</th>
+                                    <th>Transporteur</th>
+                                    <th>Disponibilité</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for item in check.items %}
+                                <tr>
+                                    <td style="font-weight: 600;">{{ item.immatriculation }}</td>
+                                    <td>{{ item.type_vehicule }}</td>
+                                    <td>{{ item.entreprise.raison_sociale }}</td>
+                                    <td><span class="tag-green">{{ item.disponibilite }}</span></td>
+                                    <td>
+                                        <a href="{% url 'admin:VehiculesApp_vehicule_change' item.id %}" target="_blank" class="action-link">Consulter dans l'Admin &rarr;</a>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                        {% endif %}
+                    </div>
+                </div>
+            {% else %}
+                <div style="font-size: 0.88rem; color: #16a34a; font-weight: 600; margin-top: 8px;">
+                    ✓ Aucune incohérence détectée pour ce contrôle.
+                </div>
+            {% endif %}
+
+        </div>
+        {% endfor %}
+    </div>
+
+</div>
+{% endblock %}
