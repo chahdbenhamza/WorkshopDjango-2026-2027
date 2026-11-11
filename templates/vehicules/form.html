@@ -1,0 +1,18 @@
+{% extends 'vehicules/base.html' %}
+
+{% block title %}Véhicule - TransConnect{% endblock %}
+
+{% block content %}
+<section class="form-panel">
+    <p class="eyebrow">GESTION DE LA FLOTTE</p>
+    <h1>Véhicule</h1>
+    <form method="post" class="vehicle-form">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <div class="form-actions">
+            <button class="button button-primary" type="submit">Enregistrer</button>
+            <a class="button button-secondary" href="{% url 'vehicules:list' %}">Annuler</a>
+        </div>
+    </form>
+</section>
+{% endblock %}

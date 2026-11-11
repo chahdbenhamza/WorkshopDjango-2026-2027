@@ -1,0 +1,55 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>{% block title %}TransConnect{% endblock %}</title>
+    <link rel="stylesheet" href="{% static 'VehiculesApp/css/site.css' %}">
+    {% block extra_css %}{% endblock %}
+</head>
+<body>
+    <header class="site-header">
+        <a class="brand" href="{% url 'home' %}">
+            <span class="brand-mark" aria-hidden="true">
+                <svg viewBox="0 0 24 24"><path d="M3 7h11v10H3zM14 10h4l3 3v4h-7zM7 20a2 2 0 1 0 0-4 2 2 0 0 0 0 4Zm11 0a2 2 0 1 0 0-4 2 2 0 0 0 0 4Z"/></svg>
+            </span>
+            TransConnect
+        </a>
+        <button class="menu-toggle" type="button" aria-expanded="false" aria-controls="main-nav" aria-label="Ouvrir le menu">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
+        </button>
+        <nav id="main-nav" class="site-nav" aria-label="Navigation principale">
+            <a href="{% url 'home' %}">
+                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m3 10 9-7 9 7v10a1 1 0 0 1-1 1h-5v-7H9v7H4a1 1 0 0 1-1-1z"/></svg>
+                Accueil
+            </a>
+            <a href="{% url 'expeditions:liste_expeditions' %}">
+                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5h16v14H4zM8 9h8M8 13h5"/></svg>
+                Expéditions
+            </a>
+            <a href="{% url 'vehicules:list' %}">
+                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 7h11v10H3zM14 10h4l3 3v4h-7zM7 20a2 2 0 1 0 0-4 2 2 0 0 0 0 4Zm11 0a2 2 0 1 0 0-4 2 2 0 0 0 0 4Z"/></svg>
+                Véhicules
+            </a>
+        </nav>
+    </header>
+    <section class="visual-banner" aria-label="Bienvenue sur TransConnect">
+        <div class="banner-copy">
+            <p class="eyebrow">TRANSPORT · LOGISTIQUE · CONFIANCE</p>
+            <p class="banner-title">Vos marchandises avancent.</p>
+            <p class="banner-subtitle">Une plateforme simple pour connecter expéditions et transporteurs.</p>
+        </div>
+        <img src="{% static 'VehiculesApp/images/truck-illustration.svg' %}" alt="Illustration d'un camion de livraison sur la route" width="300" height="180">
+    </section>
+    <main class="page-content">
+        {% block content %}{% endblock %}
+    </main>
+    <footer class="site-footer">
+        <span>© {% now "Y" %} TransConnect</span>
+        <span>Le transport en mouvement</span>
+    </footer>
+    <script defer src="{% static 'VehiculesApp/js/site.js' %}"></script>
+    {% block extra_js %}{% endblock %}
+</body>
+</html>

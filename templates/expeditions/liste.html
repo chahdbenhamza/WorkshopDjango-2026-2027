@@ -1,10 +1,30 @@
-<h1>Liste des expéditions publiées</h1>
-<ul>
+{% extends 'vehicules/base.html' %}
+{% block title %}Liste des expéditions{% endblock %}
+{% block content %}
+<section class="section-heading">
+    <div>
+        <p class="eyebrow">TRANSPORT</p>
+        <h1>Expéditions publiées</h1>
+        <p class="muted">Découvrez les expéditions disponibles.</p>
+    </div>
+</section>
+{% if expeditions %}
+<div class="shipment-list">
   {% for e in expeditions %}
-  <li><a href="{% url 'expeditions:detail' e.reference %}">{{ e.reference }}</a></li>
-  {% empty %}
-
-  <p> aucune expeditions trouvés(publiées)</p>
-
+  <a class="shipment-card" href="{% url 'expeditions:detail' e.reference %}">
+    <span class="shipment-icon" aria-hidden="true">
+      <svg viewBox="0 0 24 24"><path d="M12 21s7-6.2 7-12a7 7 0 1 0-14 0c0 5.8 7 12 7 12Z"/><circle cx="12" cy="9" r="2.5"/></svg>
+    </span>
+    <span><strong>Expédition {{ e.reference }}</strong><small>Voir les détails</small></span>
+    <span class="shipment-arrow" aria-hidden="true">→</span>
+  </a>
   {% endfor %}
-</ul>
+</div>
+{% else %}
+<div class="empty-state">
+    <span class="empty-icon" aria-hidden="true">📦</span>
+    <h2>Aucune expédition publiée</h2>
+    <p>Les nouvelles expéditions apparaîtront ici.</p>
+</div>
+{% endif %}
+{% endblock %}

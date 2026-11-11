@@ -1,0 +1,17 @@
+{% extends 'vehicules/base.html' %}
+
+{% block content %}
+<section class="form-panel delete-panel">
+    <p class="eyebrow">CONFIRMATION</p>
+    <h1>Supprimer ce véhicule ?</h1>
+    <p><strong>{{ vehicule.immatriculation }}</strong> · {{ vehicule.get_type_vehicule_display }} · {{ vehicule.capacite_kg }} kg</p>
+    <p class="warning">Attention : les offres liées à ce véhicule seront aussi supprimées.</p>
+    <form method="post">
+        {% csrf_token %}
+        <div class="form-actions">
+            <button class="button button-danger" type="submit">Confirmer la suppression</button>
+            <a class="button button-secondary" href="{% url 'vehicules:list' %}">Annuler</a>
+        </div>
+    </form>
+</section>
+{% endblock %}

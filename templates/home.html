@@ -1,0 +1,51 @@
+{% extends 'vehicules/base.html' %}
+
+{% block title %}Accueil - TransConnect{% endblock %}
+
+{% block content %}
+<section class="home-intro">
+    <div class="home-intro-copy">
+        <p class="eyebrow">BIENVENUE SUR TRANSCONNECT</p>
+        <h1>Le transport de vos marchandises, en toute simplicité.</h1>
+        <p class="home-description">
+            Retrouvez les expéditions publiées et gérez les véhicules de votre flotte depuis une seule plateforme.
+        </p>
+        <div class="home-actions">
+            <a class="button button-primary" href="{% url 'expeditions:liste_expeditions' %}">
+                Découvrir les expéditions <span aria-hidden="true">→</span>
+            </a>
+            <a class="button button-secondary" href="{% url 'vehicules:list' %}">
+                Voir les véhicules
+            </a>
+        </div>
+    </div>
+</section>
+
+<section class="home-services" aria-labelledby="services-title">
+    <div class="section-heading">
+        <div>
+            <p class="eyebrow">LA PLATEFORME</p>
+            <h2 id="services-title">Tout commence ici</h2>
+            <p class="muted">Accédez rapidement aux espaces principaux.</p>
+        </div>
+    </div>
+    <div class="service-grid">
+        <a class="service-card" href="{% url 'expeditions:liste_expeditions' %}">
+            <span class="service-icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24"><path d="M4 5h16v14H4zM8 9h8M8 13h5"/></svg>
+            </span>
+            <h3>Expéditions</h3>
+            <p>Consultez les expéditions actuellement publiées.</p>
+            <span class="service-link">Parcourir les expéditions <span aria-hidden="true">→</span></span>
+        </a>
+        <a class="service-card" href="{% url 'vehicules:list' %}">
+            <span class="service-icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24"><path d="M3 7h11v10H3zM14 10h4l3 3v4h-7zM7 20a2 2 0 1 0 0-4 2 2 0 0 0 0 4Zm11 0a2 2 0 1 0 0-4 2 2 0 0 0 0 4Z"/></svg>
+            </span>
+            <h3>Véhicules</h3>
+            <p>Consultez et gérez les véhicules de votre flotte.</p>
+            <span class="service-link">Gérer les véhicules <span aria-hidden="true">→</span></span>
+        </a>
+    </div>
+</section>
+{% endblock %}

@@ -1,0 +1,50 @@
+{% extends 'vehicules/base.html' %}
+
+{% block title %}Véhicules - TransConnect{% endblock %}
+
+{% block content %}
+<section class="section-heading">
+    <div>
+        <p class="eyebrow">FLOTTE</p>
+        <h1>Vos véhicules</h1>
+        <p class="muted">Consultez et gérez les véhicules enregistrés.</p>
+    </div>
+    <a class="button button-primary" href="{% url 'vehicules:create' %}">
+        <span aria-hidden="true">＋</span> Ajouter un véhicule
+    </a>
+</section>
+
+{% if vehicules %}
+<div class="vehicle-grid">
+    {% for vehicule in vehicules %}
+    <article class="vehicle-card">
+        <div class="vehicle-card-top">
+            <span class="vehicle-icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24"><path d="M3 7h11v10H3zM14 10h4l3 3v4h-7zM7 20a2 2 0 1 0 0-4 2 2 0 0 0 0 4Zm11 0a2 2 0 1 0 0-4 2 2 0 0 0 0 4Z"/></svg>
+            </span>
+            <span class="status {% if vehicule.disponibilite %}status-available{% else %}status-unavailable{% endif %}">
+                {% if vehicule.disponibilite %}Disponible{% else %}Indisponible{% endif %}
+            </span>
+        </div>
+        <h2>{{ vehicule.immatriculation }}</h2>
+        <p class="muted">{{ vehicule.get_type_vehicule_display }}</p>
+        <dl class="vehicle-facts">
+            <div><dt>Capacité</dt><dd>{{ vehicule.capacite_kg }} kg</dd></div>
+            <div><dt>Entreprise</dt><dd>{{ vehicule.entreprise.raison_sociale }}</dd></div>
+        </dl>
+        <div class="card-actions">
+            <a class="button button-secondary" href="{% url 'vehicules:update' vehicule.pk %}">Modifier</a>
+            <a class="button button-danger" href="{% url 'vehicules:delete' vehicule.pk %}">Supprimer</a>
+        </div>
+    </article>
+    {% endfor %}
+</div>
+{% else %}
+<div class="empty-state">
+    <span class="empty-icon" aria-hidden="true">🚚</span>
+    <h2>Aucun véhicule pour le moment</h2>
+    <p>Ajoutez votre premier véhicule pour commencer à gérer votre flotte.</p>
+    <a class="button button-primary" href="{% url 'vehicules:create' %}">Ajouter un véhicule</a>
+</div>
+{% endif %}
+{% endblock %}
