@@ -9,7 +9,8 @@ class vehiculesCreateView(CreateView):
     template_name='vehicules/form.html'
     #fields='__all__'
     form_class=VehiculeForm
-    success_url=reverse_lazy('Vehicules:list')
+    # success_url=reverse_lazy('Vehicules:list')
+    success_url=reverse_lazy('vehicules:list')
 
 class ListVehiculeView(ListView):
     model=Vehicule
@@ -26,7 +27,7 @@ class VehiculeUpdateView(UpdateView):
 
 class VehiculeDeleteView(DeleteView):
     model = Vehicule
-    form_class = VehiculeForm
+    # form_class = VehiculeForm
     template_name = 'vehicules/confirm_delete.html'
     success_url = reverse_lazy('vehicules:list')
     context_object_name='vehicule'

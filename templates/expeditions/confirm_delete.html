@@ -1,0 +1,20 @@
+{% extends 'vehicules/base.html' %}
+
+{% block title %}Supprimer l'expédition - TransConnect{% endblock %}
+
+{% block content %}
+<section class="form-panel delete-panel">
+    <p class="eyebrow">CONFIRMATION</p>
+    <h1>Supprimer cette expédition ?</h1>
+    <p><strong>Expédition {{ expedition.reference }}</strong> · {{ expedition.ville_depart }} &rarr; {{ expedition.ville_arrive }} · {{ expedition.poid_kg }} kg</p>
+    <p class="warning">Attention : les offres associées à cette expédition seront également supprimées.</p>
+    <form method="post">
+        {% csrf_token %}
+        <div class="form-actions">
+            <button class="button button-danger" type="submit">Confirmer la suppression</button>
+            <a class="button button-secondary" href="{% url 'expeditions:liste_expeditions' %}">Annuler</a>
+        </div>
+    </form>
+</section>
+{% endblock %}
+

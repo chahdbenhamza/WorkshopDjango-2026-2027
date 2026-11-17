@@ -1,0 +1,49 @@
+{% extends 'vehicules/base.html' %}
+
+{% block title %}Entreprises - TransConnect{% endblock %}
+
+{% block content %}
+<section class="section-heading">
+    <div>
+        <p class="eyebrow">PARTENAIRES</p>
+        <h1>Entreprises partenaires</h1>
+        <p class="muted">Consultez et gérez les entreprises chargeurs et transporteurs enregistrées.</p>
+    </div>
+    <a class="button button-primary" href="{% url 'entreprises:create' %}">
+        <span aria-hidden="true">＋</span> Ajouter une entreprise
+    </a>
+</section>
+
+{% if entreprises %}
+<div class="vehicle-grid">
+    {% for ent in entreprises %}
+    <article class="vehicle-card">
+        <div class="vehicle-card-top">
+            <span class="vehicle-icon" aria-hidden="true">🏢</span>
+            <span class="status {% if ent.type_entreprise == 'transporteur' %}status-available{% else %}status-unavailable{% endif %}">
+                {{ ent.get_type_entreprise_display }}
+            </span>
+        </div>
+        <h2>{{ ent.raison_sociale }}</h2>
+        <p class="muted">Matricule : {{ ent.matricule_fiscal }}</p>
+        <dl class="vehicle-facts">
+            <div><dt>Gérant</dt><dd>{{ ent.gerant.username }} ({{ ent.gerant.email }})</dd></div>
+            <div><dt>Adresse</dt><dd>{{ ent.adresse }}</dd></div>
+        </dl>
+        <div class="card-actions">
+            <a class="button button-secondary" href="{% url 'entreprises:update' ent.pk %}">Modifier</a>
+            <a class="button button-danger" href="{% url 'entreprises:delete' ent.pk %}">Supprimer</a>
+        </div>
+    </article>
+    {% endfor %}
+</div>
+{% else %}
+<div class="empty-state">
+    <span class="empty-icon" aria-hidden="true">🏢</span>
+    <h2>Aucune entreprise enregistrée</h2>
+    <p>Ajoutez votre première entreprise pour démarrer.</p>
+    <a class="button button-primary" href="{% url 'entreprises:create' %}">Ajouter une entreprise</a>
+</div>
+{% endif %}
+{% endblock %}
+

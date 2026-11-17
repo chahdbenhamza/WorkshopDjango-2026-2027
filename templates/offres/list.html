@@ -1,0 +1,50 @@
+{% extends 'vehicules/base.html' %}
+
+{% block title %}Offres - TransConnect{% endblock %}
+
+{% block content %}
+<section class="section-heading">
+    <div>
+        <p class="eyebrow">NÉGOCIATION</p>
+        <h1>Offres de transport</h1>
+        <p class="muted">Consultez les propositions tarifaires déposées par les transporteurs.</p>
+    </div>
+    <a class="button button-primary" href="{% url 'offres:create' %}">
+        <span aria-hidden="true">＋</span> Déposer une offre
+    </a>
+</section>
+
+{% if offres %}
+<div class="vehicle-grid">
+    {% for offre in offres %}
+    <article class="vehicle-card">
+        <div class="vehicle-card-top">
+            <span class="vehicle-icon" aria-hidden="true">🏷️</span>
+            <span class="status status-available">
+                {{ offre.get_statut_display }}
+            </span>
+        </div>
+        <h2>{{ offre.prix }} TND</h2>
+        <p class="muted">Expédition {{ offre.expedition.reference }} ({{ offre.delai_jours }} jour{{ offre.delai_jours|pluralize }})</p>
+        <dl class="vehicle-facts">
+            <div><dt>Transporteur</dt><dd>{{ offre.transporteur.raison_sociale }}</dd></div>
+            <div><dt>Véhicule</dt><dd>{{ offre.vehicule }}</dd></div>
+            <div><dt>Date</dt><dd>{{ offre.date_proposition|date:"d/m/Y" }}</dd></div>
+        </dl>
+        <div class="card-actions">
+            <a class="button button-secondary" href="{% url 'offres:update' offre.pk %}">Modifier</a>
+            <a class="button button-danger" href="{% url 'offres:delete' offre.pk %}">Supprimer</a>
+        </div>
+    </article>
+    {% endfor %}
+</div>
+{% else %}
+<div class="empty-state">
+    <span class="empty-icon" aria-hidden="true">🏷️</span>
+    <h2>Aucune offre pour le moment</h2>
+    <p>Déposez une première offre sur une expédition publiée.</p>
+    <a class="button button-primary" href="{% url 'offres:create' %}">Déposer une offre</a>
+</div>
+{% endif %}
+{% endblock %}
+

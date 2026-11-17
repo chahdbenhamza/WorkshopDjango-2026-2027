@@ -110,3 +110,68 @@ class ExpeditionAdminTests(TestCase):
         qs_non = f_non.queryset(None, Expedition.objects.all())
         self.assertNotIn(exp_retard, qs_non)
         self.assertIn(exp_futur, qs_non)
+
+
+
+class ExpeditionCRUDViewTests(TestCase):
+    def setUp(self):
+        self.client = Client()
+        self.user = Utilisateur(
+            username="chargeur_crud_user",
+            email="chargeur.crud@gmail.com",
+            roles="chargeur",
+        )
+        self.user.set_password("Password123!")
+        self.user.save()
+        self.entreprise = Entreprise.objects.create(
+            gerant=self.user,
+            raison_sociale="Chargeur Crud Express",
+            matricule_fiscal="1234567AAM777",
+            type_entreprise="chargeur",
+            adresse="Avenue Habib Bourguiba, 1000 Tunis, Tunisie",
+        )
+        self.expedition = Expedition.objects.create(
+            entreprise=self.entreprise,
+            ville_depart="Tunis",
+            ville_arrive="Sousse",
+            date_souhaitée=timezone.now() + timedelta(days=3),
+            poid_kg=Decimal("500.00"),
+            statut="publiee",
+            description="Lot de pièces détachées",
+        )
+
+    def test_list_expeditions(self):
+        res = self.client.get(reverse('expeditions:liste_expeditions'))
+        self.assertEqual(res.status_code, 200)
+        self.assertContains(res, self.expedition.reference)
+
+    def test_detail_expedition(self):
+        res = self.client.get(reverse('expeditions:detail', args=[self.expedition.reference]))
+        self.assertEqual(res.status_code, 200)
+        self.assertContains(res, self.expedition.reference)
+
+    def test_create_expedition(self):
+        date_str = (timezone.now() + timedelta(days=5)).strftime('%Y-%m-%dT%H:%M')
+        res = self.client.post(
+            reverse('expeditions:create'),
+            {
+                'ville_depart': 'Bizerte',
+                'ville_arrive': 'Sfax',
+                'date_souhaitée': date_str,
+                'poid_kg': '750.00',
+                'statut': 'publiee',
+                'entreprise': self.entreprise.pk,
+                'description': 'Nouvelle expédition test',
+            },
+            follow=True,
+        )
+        self.assertEqual(res.status_code, 200)
+        self.assertTrue(Expedition.objects.filter(ville_depart='Bizerte').exists())
+
+    def test_delete_expedition(self):
+        res = self.client.post(
+            reverse('expeditions:delete', args=[self.expedition.pk]),
+            follow=True,
+        )
+        self.assertEqual(res.status_code, 200)
+        self.assertFalse(Expedition.objects.filter(pk=self.expedition.pk).exists())

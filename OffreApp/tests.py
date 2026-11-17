@@ -130,3 +130,75 @@ class OffreAdminTests(TestCase):
         res = self.client.get(url)
         self.assertEqual(res.status_code, 200)
         self.assertContains(res, "Tableau de bord de contrôle d'intégrité")
+
+
+
+class OffreCRUDViewTests(TestCase):
+    def setUp(self):
+        self.client = Client()
+        self.user_ch = Utilisateur(
+            username="ch_offre_test",
+            email="ch.offre@gmail.com",
+            roles="chargeur",
+        )
+        self.user_ch.set_password("Password123!")
+        self.user_ch.save()
+
+        self.chargeur = Entreprise.objects.create(
+            gerant=self.user_ch,
+            raison_sociale="Chargeur Offre SA",
+            matricule_fiscal="1234567AAM444",
+            type_entreprise="chargeur",
+            adresse="Avenue Habib Bourguiba, 1000 Tunis, Tunisie",
+        )
+        self.user_tr = Utilisateur(
+            username="tr_offre_test",
+            email="tr.offre@gmail.com",
+            roles="transporteur",
+        )
+        self.user_tr.set_password("Password123!")
+        self.user_tr.save()
+        self.transporteur = Entreprise.objects.create(
+            gerant=self.user_tr,
+            raison_sociale="Transporteur Offre SA",
+            matricule_fiscal="1234567BAM444",
+            type_entreprise="transporteur",
+            adresse="Avenue Habib Bourguiba, 1000 Tunis, Tunisie",
+        )
+        self.vehicule = Vehicule.objects.create(
+            immatriculation="175 TUN 8888",
+            type_vehicule="camionnette",
+            capacite_kg=1200,
+            disponibilite=True,
+            entreprise=self.transporteur,
+        )
+        self.expedition = Expedition.objects.create(
+            entreprise=self.chargeur,
+            ville_depart="Tunis",
+            ville_arrive="Monastir",
+            date_souhaitée=timezone.now() + timedelta(days=2),
+            poid_kg=Decimal("400.00"),
+            statut="publiee",
+            description="Colis fragile",
+        )
+        self.offre = Offre.objects.create(
+            expedition=self.expedition,
+            transporteur=self.transporteur,
+            vehicule=self.vehicule,
+            prix=Decimal("350.00"),
+            delai_jours=2,
+            statut="proposee",
+        )
+
+    def test_list_offres(self):
+        res = self.client.get(reverse('offres:list'))
+        self.assertEqual(res.status_code, 200)
+        self.assertContains(res, "350.00")
+
+    def test_delete_offre(self):
+        res = self.client.post(
+            reverse('offres:delete', args=[self.offre.pk]),
+            follow=True,
+        )
+        self.assertEqual(res.status_code, 200)
+        self.assertFalse(Offre.objects.filter(pk=self.offre.pk).exists())

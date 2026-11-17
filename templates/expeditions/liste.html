@@ -7,6 +7,9 @@
         <h1>Expéditions publiées</h1>
         <p class="muted">Découvrez les expéditions disponibles.</p>
     </div>
+    <a class="button button-primary" href="{% url 'expeditions:create' %}">
+        <span aria-hidden="true">＋</span> Ajouter une expédition
+    </a>
 </section>
 {% if expeditions %}
 <div class="shipment-list">

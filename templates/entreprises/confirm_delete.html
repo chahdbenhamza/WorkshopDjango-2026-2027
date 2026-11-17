@@ -1,0 +1,20 @@
+{% extends 'vehicules/base.html' %}
+
+{% block title %}Supprimer l'entreprise - TransConnect{% endblock %}
+
+{% block content %}
+<section class="form-panel delete-panel">
+    <p class="eyebrow">CONFIRMATION</p>
+    <h1>Supprimer cette entreprise ?</h1>
+    <p><strong>{{ entreprise.raison_sociale }}</strong> · {{ entreprise.get_type_entreprise_display }} · Matricule : {{ entreprise.matricule_fiscal }}</p>
+    <p class="warning">Attention : la suppression d'une entreprise entraîne la suppression en cascade de ses véhicules, expéditions et offres rattachées.</p>
+    <form method="post">
+        {% csrf_token %}
+        <div class="form-actions">
+            <button class="button button-danger" type="submit">Confirmer la suppression</button>
+            <a class="button button-secondary" href="{% url 'entreprises:list' %}">Annuler</a>
+        </div>
+    </form>
+</section>
+{% endblock %}
+

@@ -68,6 +68,10 @@
   <p>Aucune offre n'a encore été reçue pour cette expédition.</p>
 {% endif %}
 
-<a href="{% url 'expeditions:liste_expeditions' %}">Retour à la liste</a>
+<div class="card-actions" style="margin-top: 24px;">
+    <a class="button button-secondary" href="{% url 'expeditions:update' expedition.pk %}">Modifier</a>
+    <a class="button button-danger" href="{% url 'expeditions:delete' expedition.pk %}">Supprimer</a>
+    <a class="button button-secondary" href="{% url 'expeditions:liste_expeditions' %}">Retour à la liste</a>
+</div>
 </section>
 {% endblock %}
