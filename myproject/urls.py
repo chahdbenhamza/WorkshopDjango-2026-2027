@@ -6,9 +6,12 @@ The `urlpatterns` list routes URLs to views. For more information please see:
 """
 from django.contrib import admin
 from django.urls import path, include
+from EntrepriseApp.views import InscriptionView
 from .views import homePage, homepagewithname
 
 urlpatterns = [
+    path('users/register/', InscriptionView.as_view(), name='register'),
+    path('users/',include('django.contrib.auth.urls')),
     path("", homePage, name='home'),
     path("home/<str:name>", homepagewithname),
     path('admin/', admin.site.urls),

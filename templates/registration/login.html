@@ -1,0 +1,15 @@
+{% extends 'vehicules/base.html' %}
+
+{% block title %}Connexion{% endblock %}
+
+{% block visual_banner %}{% endblock %}
+
+{% block content %}
+<h1>Connexion</h1>
+
+<form method="post">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit" class="button button-primary">Se connecter</button>
+</form>
+{% endblock %}

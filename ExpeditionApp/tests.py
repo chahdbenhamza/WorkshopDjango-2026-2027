@@ -139,6 +139,7 @@ class ExpeditionCRUDViewTests(TestCase):
             statut="publiee",
             description="Lot de pièces détachées",
         )
+        self.client.force_login(self.user)
 
     def test_list_expeditions(self):
         res = self.client.get(reverse('expeditions:liste_expeditions'))
@@ -175,3 +176,19 @@ class ExpeditionCRUDViewTests(TestCase):
         )
         self.assertEqual(res.status_code, 200)
         self.assertFalse(Expedition.objects.filter(pk=self.expedition.pk).exists())
+
+    def test_expedition_pages_require_login(self):
+        anonymous_client = Client()
+        protected_urls = [
+            reverse('expeditions:liste_expeditions'),
+            reverse('expeditions:detail', args=[self.expedition.reference]),
+            reverse('expeditions:create'),
+            reverse('expeditions:update', args=[self.expedition.pk]),
+            reverse('expeditions:delete', args=[self.expedition.pk]),
+        ]
+
+        for url in protected_urls:
+            with self.subTest(url=url):
+                response = anonymous_client.get(url)
+                self.assertEqual(response.status_code, 302)
+                self.assertTrue(response.url.startswith(reverse('login')))

@@ -1,5 +1,6 @@
 from django.shortcuts import render, get_object_or_404
 from django.contrib import messages
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views.generic import CreateView, ListView, UpdateView, DeleteView, DetailView
 from django.urls import reverse_lazy
 from .models import Expedition
@@ -37,7 +38,7 @@ from .forms import ExpeditionForm
 
 # --- Vues génériques CBV (CRUD) ---
 
-class expeditionsCreateView(CreateView):
+class expeditionsCreateView(LoginRequiredMixin, CreateView):
     model = Expedition
     template_name = 'expeditions/form.html'
     # fields='__all__'
@@ -49,7 +50,7 @@ class expeditionsCreateView(CreateView):
 ExpeditionCreateView = expeditionsCreateView
 
 
-class ListExpeditionView(ListView):
+class ListExpeditionView(LoginRequiredMixin, ListView):
     model = Expedition
     template_name = 'expeditions/liste.html'
     context_object_name = 'expeditions'
@@ -62,7 +63,7 @@ class ListExpeditionView(ListView):
 ExpeditionListView = ListExpeditionView
 
 
-class ExpeditionDetailView(DetailView):
+class ExpeditionDetailView(LoginRequiredMixin, DetailView):
     model = Expedition
     template_name = 'expeditions/detail.html'
     context_object_name = 'expedition'
@@ -79,14 +80,14 @@ class ExpeditionDetailView(DetailView):
         return context
 
 
-class ExpeditionUpdateView(UpdateView):
+class ExpeditionUpdateView(LoginRequiredMixin, UpdateView):
     model = Expedition
     form_class = ExpeditionForm
     template_name = 'expeditions/form.html'
     success_url = reverse_lazy('expeditions:list')
 
 
-class ExpeditionDeleteView(DeleteView):
+class ExpeditionDeleteView(LoginRequiredMixin, DeleteView):
     model = Expedition
     # form_class = ExpeditionForm
     template_name = 'expeditions/confirm_delete.html'

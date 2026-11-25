@@ -189,6 +189,7 @@ class OffreCRUDViewTests(TestCase):
             delai_jours=2,
             statut="proposee",
         )
+        self.client.force_login(self.user_ch)
 
     def test_list_offres(self):
         res = self.client.get(reverse('offres:list'))
@@ -202,3 +203,19 @@ class OffreCRUDViewTests(TestCase):
         )
         self.assertEqual(res.status_code, 200)
         self.assertFalse(Offre.objects.filter(pk=self.offre.pk).exists())
+
+    def test_offre_pages_require_login(self):
+        anonymous_client = Client()
+        protected_urls = [
+            reverse('offres:list'),
+            reverse('offres:detail', args=[self.offre.pk]),
+            reverse('offres:create'),
+            reverse('offres:update', args=[self.offre.pk]),
+            reverse('offres:delete', args=[self.offre.pk]),
+        ]
+
+        for url in protected_urls:
+            with self.subTest(url=url):
+                response = anonymous_client.get(url)
+                self.assertEqual(response.status_code, 302)
+                self.assertTrue(response.url.startswith(reverse('login')))

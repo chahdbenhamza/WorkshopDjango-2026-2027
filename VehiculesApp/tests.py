@@ -29,6 +29,7 @@ class VehiculeCRUDViewTests(TestCase):
             disponibilite=True,
             entreprise=self.entreprise,
         )
+        self.client.force_login(self.user)
 
     def test_list_vehicules(self):
         res = self.client.get(reverse('vehicules:list'))
@@ -71,3 +72,18 @@ class VehiculeCRUDViewTests(TestCase):
         )
         self.assertEqual(res.status_code, 200)
         self.assertFalse(Vehicule.objects.filter(pk=self.vehicule.pk).exists())
+
+    def test_vehicule_pages_require_login(self):
+        anonymous_client = Client()
+        protected_urls = [
+            reverse('vehicules:list'),
+            reverse('vehicules:create'),
+            reverse('vehicules:update', args=[self.vehicule.pk]),
+            reverse('vehicules:delete', args=[self.vehicule.pk]),
+        ]
+
+        for url in protected_urls:
+            with self.subTest(url=url):
+                response = anonymous_client.get(url)
+                self.assertEqual(response.status_code, 302)
+                self.assertTrue(response.url.startswith(reverse('login')))

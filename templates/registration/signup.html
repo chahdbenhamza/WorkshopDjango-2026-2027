@@ -1,0 +1,17 @@
+{% extends 'vehicules/base.html' %}
+
+{% block title %}Inscription{% endblock %}
+
+{% block visual_banner %}{% endblock %}
+
+{% block content %}
+<section class="form-panel" aria-labelledby="signup-title">
+    <h1 id="signup-title">Créer un compte</h1>
+
+    <form method="post" class="vehicle-form">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit" class="button button-primary">S'inscrire</button>
+    </form>
+</section>
+{% endblock %}
